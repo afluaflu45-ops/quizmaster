@@ -1,0 +1,18 @@
+{
+  "version": 2,
+
+  "buildCommand": "BASE_PATH=/ pnpm --filter @workspace/quiz-app run build",
+  "outputDirectory": "artifacts/quiz-app/dist/public",
+
+  "functions": {
+    "api/index.ts": {
+      "memory": 512,
+      "maxDuration": 30
+    }
+  },
+
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/index" },
+    { "source": "/(.*)",       "destination": "/index.html" }
+  ]
+}
