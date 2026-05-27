@@ -2,6 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
+import { fileURLToPath } from "url";
+
+// import.meta.dirname was added in Node.js 20.11.0.
+// Vercel's build environment defaults to Node.js 18, so we use the
+// fileURLToPath approach which works on any Node.js version that supports ESM.
+const __configDir = path.dirname(fileURLToPath(import.meta.url));
 
 // PORT is only needed for the dev/preview server, not for `vite build`.
 const rawPort = process.env.PORT;
@@ -28,7 +34,7 @@ const replitPlugins = isReplit
             ),
             await import("@replit/vite-plugin-cartographer").then((m) =>
               m.cartographer({
-                root: path.resolve(import.meta.dirname, ".."),
+                root: path.resolve(__configDir, ".."),
               }),
             ),
             await import("@replit/vite-plugin-dev-banner").then((m) =>
@@ -44,19 +50,14 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), ...replitPlugins],
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "src"),
-      "@assets": path.resolve(
-        import.meta.dirname,
-        "..",
-        "..",
-        "attached_assets",
-      ),
+      "@": path.resolve(__configDir, "src"),
+      "@assets": path.resolve(__configDir, "..", "..", "attached_assets"),
     },
     dedupe: ["react", "react-dom"],
   },
-  root: path.resolve(import.meta.dirname),
+  root: path.resolve(__configDir),
   build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    outDir: path.resolve(__configDir, "dist/public"),
     emptyOutDir: true,
   },
   // server / preview blocks are only meaningful when PORT is known.
